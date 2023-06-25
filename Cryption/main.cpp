@@ -2,77 +2,70 @@
 
 int main()
 {
-    if (!addToStartup()) {
+    if (!CryptionStart()) {
         return 1;
     }
 
-    if (isDebuggerOrReverseEngineeringToolRunning()) {
+    if (protection()) {
         return 1;
     }
 
-    HideConsole();
     system("cls");
     std::string folder;
     std::string password;
     std::string hashedPassword;
 
-    if (!FileExists("C:/ProgramData/password.crypt") || !FileExists("C:/ProgramData/files.crypt"))
+
+    if (!FileExists("C:/ProgramData/files.crypt"))
     {
         std::cout << "Enter a folder to encrypt: ";
         std::cin >> folder;
-
-        std::ofstream fileFolder("C:/ProgramData/files.crypt");
-        fileFolder << folder;
+        std::ifstream fileFolder("C:/ProgramData/files.crypt");
+        fileFolder >> folder;
         fileFolder.close();
+
 
         std::cout << "Set your password: ";
         std::cin >> password;
         hashedPassword = GetHashedPassword(password);
 
-        std::ofstream filePass("C:/ProgramData/password.crypt");
-        filePass << hashedPassword;
-        filePass.close();
-
         iterateDirectoryAndXOR(folder, password);
     }
     else
     {
-        std::ifstream fileFolder("C:/ProgramData/files.crypt");
-        fileFolder >> folder;
-        fileFolder.close();
-
-        std::ifstream filePass("C:/ProgramData/password.crypt");
-        filePass >> hashedPassword;
-        filePass.close();
+        std::cout << "Enter your password: ";
+        std::cin >> password;
+        hashedPassword = GetHashedPassword(password);
     }
 
     std::string enteredPassword;
-    std::cout << "Enter your password to decrypt: ";
-    std::cin >> enteredPassword;
-    std::string hashedEnteredPassword = GetHashedPassword(enteredPassword);
-
-    if (hashedEnteredPassword == hashedPassword)
+    if (!FileExists("C:/ProgramData/files.crypt"))
     {
+        HideConsole();
 
-        if (isDebuggerOrReverseEngineeringToolRunning()) {
-            std::cout << "Debugger or reverse engineering tool detected.";
+        std::cout << "Enter your password to decrypt: ";
+        std::cin >> enteredPassword;
+        std::string hashedEnteredPassword = GetHashedPassword(enteredPassword);
+
+        if (hashedEnteredPassword == hashedPassword)
+        {
+            if (protection()) {
+                return 1;
+            }
+
+            unencryptFiles(folder, password);
+            ShowSuccessMessageBox();
+        }
+        else
+        {
+            std::cout << "Incorrect password.";
             return 1;
         }
-
-        system("start explorer");
-        unencryptFiles(folder, password);
-        ShowSuccessMessageBox();
-
     }
-    else
-    {
-        std::cout << "Incorrect password.";
-        return 1;
-    }
+
     ShowSuccessMessageBox();
 
     std::cin.ignore();
 }
-
 
 
